@@ -1,0 +1,6 @@
+kubeconfig
+terraform.tfstate*
+.terraform
+key_pair.pem
+*.csv
+notes

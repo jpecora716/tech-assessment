@@ -1,0 +1,229 @@
+Scanning your code and 256 packages across 29 dependent modules for known vulnerabilities...
+
+=== Symbol Results ===
+
+Vulnerability #1: GO-2024-2610
+    Errors returned from JSON marshaling may break template escaping in
+    html/template
+  More info: https://pkg.go.dev/vuln/GO-2024-2610
+  Standard library
+    Found in: html/template@go1.22
+    Fixed in: html/template@go1.22.1
+    Example traces found:
+      #1: main.go:11:8: tasky.index calls gin.Context.HTML, which eventually calls template.Template.Execute
+      #2: main.go:11:8: tasky.index calls gin.Context.HTML, which eventually calls template.Template.ExecuteTemplate
+
+Vulnerability #2: GO-2024-2600
+    Incorrect forwarding of sensitive headers and cookies on HTTP redirect in
+    net/http
+  More info: https://pkg.go.dev/vuln/GO-2024-2600
+  Standard library
+    Found in: net/http@go1.22
+    Fixed in: net/http@go1.22.1
+    Example traces found:
+      #1: database/database.go:26:22: database.CreateMongoClient calls mongo.Client.Connect, which eventually calls http.Client.Do
+
+Vulnerability #3: GO-2024-2599
+    Memory exhaustion in multipart form parsing in net/textproto and net/http
+  More info: https://pkg.go.dev/vuln/GO-2024-2599
+  Standard library
+    Found in: net/textproto@go1.22
+    Fixed in: net/textproto@go1.22.1
+    Example traces found:
+      #1: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls textproto.Reader.ReadLine
+      #2: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls textproto.Reader.ReadMIMEHeader
+
+Vulnerability #4: GO-2024-2598
+    Verify panics on certificates with an unknown public key algorithm in
+    crypto/x509
+  More info: https://pkg.go.dev/vuln/GO-2024-2598
+  Standard library
+    Found in: crypto/x509@go1.22
+    Fixed in: crypto/x509@go1.22.1
+    Example traces found:
+      #1: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls x509.Certificate.Verify
+
+Vulnerability #5: GO-2023-2102
+    HTTP/2 rapid reset can cause excessive work in net/http
+  More info: https://pkg.go.dev/vuln/GO-2023-2102
+  Module: golang.org/x/net
+    Found in: golang.org/x/net@v0.0.0-20210226172049-e18ecbb05110
+    Fixed in: golang.org/x/net@v0.17.0
+    Example traces found:
+      #1: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.Server.ServeConn
+
+Vulnerability #6: GO-2023-1571
+    Denial of service via crafted HTTP/2 stream in net/http and golang.org/x/net
+  More info: https://pkg.go.dev/vuln/GO-2023-1571
+  Module: golang.org/x/net
+    Found in: golang.org/x/net@v0.0.0-20210226172049-e18ecbb05110
+    Fixed in: golang.org/x/net@v0.7.0
+    Example traces found:
+      #1: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.ConnectionError.Error
+      #2: controllers/todoController.go:14:2: controllers.init calls primitive.init, which eventually calls hpack.Decoder.Write
+      #3: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.ErrCode.String
+      #4: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.FrameHeader.String
+      #5: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.FrameType.String
+      #6: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.FrameWriteRequest.String
+      #7: main.go:4:2: tasky.init calls http.init, which eventually calls http2.Framer.WriteContinuation
+      #8: main.go:4:2: tasky.init calls http.init, which eventually calls http2.Framer.WriteData
+      #9: main.go:4:2: tasky.init calls http.init, which eventually calls http2.Framer.WriteHeaders
+      #10: main.go:4:2: tasky.init calls http.init, which eventually calls http2.Framer.WriteRSTStream
+      #11: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.Framer.WriteSettings
+      #12: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.GoAwayError.Error
+      #13: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.ReadFrameHeader
+      #14: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.Server.ServeConn
+      #15: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.Setting.String
+      #16: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.SettingID.String
+      #17: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.StreamError.Error
+      #18: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.chunkWriter.Write
+      #19: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.connError.Error
+      #20: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.duplicatePseudoHeaderError.Error
+      #21: database/database.go:26:22: database.CreateMongoClient calls mongo.Client.Connect, which eventually calls http2.gzipReader.Close
+      #22: controllers/todoController.go:14:2: controllers.init calls primitive.init, which eventually calls http2.gzipReader.Read
+      #23: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.headerFieldNameError.Error
+      #24: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.headerFieldValueError.Error
+      #25: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.pseudoHeaderError.Error
+      #26: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.requestBody.Close
+      #27: controllers/todoController.go:14:2: controllers.init calls primitive.init, which eventually calls http2.requestBody.Read
+      #28: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.responseWriter.Write
+      #29: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.responseWriter.WriteHeader
+      #30: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.responseWriter.WriteString
+      #31: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.stickyErrWriter.Write
+      #32: database/database.go:26:22: database.CreateMongoClient calls mongo.Client.Connect, which eventually calls http2.transportResponseBody.Close
+      #33: controllers/todoController.go:14:2: controllers.init calls primitive.init, which eventually calls http2.transportResponseBody.Read
+      #34: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.writeData.String
+
+Vulnerability #7: GO-2022-1144
+    Excessive memory growth in net/http and golang.org/x/net/http2
+  More info: https://pkg.go.dev/vuln/GO-2022-1144
+  Module: golang.org/x/net
+    Found in: golang.org/x/net@v0.0.0-20210226172049-e18ecbb05110
+    Fixed in: golang.org/x/net@v0.4.0
+    Example traces found:
+      #1: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.Server.ServeConn
+
+Vulnerability #8: GO-2022-0969
+    Denial of service in net/http and golang.org/x/net/http2
+  More info: https://pkg.go.dev/vuln/GO-2022-0969
+  Module: golang.org/x/net
+    Found in: golang.org/x/net@v0.0.0-20210226172049-e18ecbb05110
+    Fixed in: golang.org/x/net@v0.0.0-20220906165146-f3363e06e74c
+    Example traces found:
+      #1: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.Server.ServeConn
+
+Vulnerability #9: GO-2022-0288
+    Unbounded memory growth in net/http and golang.org/x/net/http2
+  More info: https://pkg.go.dev/vuln/GO-2022-0288
+  Module: golang.org/x/net
+    Found in: golang.org/x/net@v0.0.0-20210226172049-e18ecbb05110
+    Fixed in: golang.org/x/net@v0.0.0-20211209124913-491a49abca63
+    Example traces found:
+      #1: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls http2.Server.ServeConn
+
+Vulnerability #10: GO-2022-0236
+    Panic due to large headers in net/http and golang.org/x/net/http/httpguts
+  More info: https://pkg.go.dev/vuln/GO-2022-0236
+  Module: golang.org/x/net
+    Found in: golang.org/x/net@v0.0.0-20210226172049-e18ecbb05110
+    Fixed in: golang.org/x/net@v0.0.0-20210428140749-89ef3d95e781
+    Example traces found:
+      #1: main.go:34:12: tasky.main calls gin.Engine.Run, which eventually calls httpguts.HeaderValuesContainsToken
+
+Vulnerability #11: GO-2021-0113
+    Out-of-bounds read in golang.org/x/text/language
+  More info: https://pkg.go.dev/vuln/GO-2021-0113
+  Module: golang.org/x/text
+    Found in: golang.org/x/text@v0.3.6
+    Fixed in: golang.org/x/text@v0.3.7
+    Example traces found:
+      #1: controllers/userController.go:28:22: controllers.SignUp calls gin.Context.BindJSON, which eventually calls language.Parse
+
+=== Package Results ===
+
+Vulnerability #1: GO-2023-1737
+    Improper handling of filenames in Content-Disposition HTTP header in
+    github.com/gin-gonic/gin
+  More info: https://pkg.go.dev/vuln/GO-2023-1737
+  Module: github.com/gin-gonic/gin
+    Found in: github.com/gin-gonic/gin@v1.8.1
+    Fixed in: github.com/gin-gonic/gin@v1.9.1
+
+Vulnerability #2: GO-2022-1059
+    Denial of service via crafted Accept-Language header in
+    golang.org/x/text/language
+  More info: https://pkg.go.dev/vuln/GO-2022-1059
+  Module: golang.org/x/text
+    Found in: golang.org/x/text@v0.3.6
+    Fixed in: golang.org/x/text@v0.3.8
+
+Vulnerability #3: GO-2022-0493
+    Incorrect privilege reporting in syscall and golang.org/x/sys/unix
+  More info: https://pkg.go.dev/vuln/GO-2022-0493
+  Module: golang.org/x/sys
+    Found in: golang.org/x/sys@v0.0.0-20210806184541-e5e7981a1069
+    Fixed in: golang.org/x/sys@v0.0.0-20220412211240-33da011f77ad
+
+Vulnerability #4: GO-2020-0017
+    Authorization bypass in github.com/dgrijalva/jwt-go
+  More info: https://pkg.go.dev/vuln/GO-2020-0017
+  Module: github.com/dgrijalva/jwt-go
+    Found in: github.com/dgrijalva/jwt-go@v3.2.0+incompatible
+    Fixed in: N/A
+
+=== Module Results ===
+
+Vulnerability #1: GO-2024-2611
+    Infinite loop in JSON unmarshaling in google.golang.org/protobuf
+  More info: https://pkg.go.dev/vuln/GO-2024-2611
+  Module: google.golang.org/protobuf
+    Found in: google.golang.org/protobuf@v1.28.0
+    Fixed in: google.golang.org/protobuf@v1.33.0
+
+Vulnerability #2: GO-2024-2609
+    Comments in display names are incorrectly handled in net/mail
+  More info: https://pkg.go.dev/vuln/GO-2024-2609
+  Standard library
+    Found in: net/mail@go1.22
+    Fixed in: net/mail@go1.22.1
+
+Vulnerability #3: GO-2023-2402
+    Man-in-the-middle attacker can compromise integrity of secure channel in
+    golang.org/x/crypto
+  More info: https://pkg.go.dev/vuln/GO-2023-2402
+  Module: golang.org/x/crypto
+    Found in: golang.org/x/crypto@v0.0.0-20210711020723-a769d52b0f97
+    Fixed in: golang.org/x/crypto@v0.17.0
+
+Vulnerability #4: GO-2023-1988
+    Improper rendering of text nodes in golang.org/x/net/html
+  More info: https://pkg.go.dev/vuln/GO-2023-1988
+  Module: golang.org/x/net
+    Found in: golang.org/x/net@v0.0.0-20210226172049-e18ecbb05110
+    Fixed in: golang.org/x/net@v0.13.0
+
+Vulnerability #5: GO-2022-0968
+    Panic on malformed packets in golang.org/x/crypto/ssh
+  More info: https://pkg.go.dev/vuln/GO-2022-0968
+  Module: golang.org/x/crypto
+    Found in: golang.org/x/crypto@v0.0.0-20210711020723-a769d52b0f97
+    Fixed in: golang.org/x/crypto@v0.0.0-20211202192323-5770296d904e
+
+Vulnerability #6: GO-2021-0356
+    Denial of service via crafted Signer in golang.org/x/crypto/ssh
+  More info: https://pkg.go.dev/vuln/GO-2021-0356
+  Module: golang.org/x/crypto
+    Found in: golang.org/x/crypto@v0.0.0-20210711020723-a769d52b0f97
+    Fixed in: golang.org/x/crypto@v0.0.0-20220314234659-1baeb1ce4c0b
+
+Vulnerability #7: GO-2021-0238
+    Infinite loop when parsing inputs in golang.org/x/net/html
+  More info: https://pkg.go.dev/vuln/GO-2021-0238
+  Module: golang.org/x/net
+    Found in: golang.org/x/net@v0.0.0-20210226172049-e18ecbb05110
+    Fixed in: golang.org/x/net@v0.0.0-20210520170846-37e1c6afe023
+
+Your code is affected by 11 vulnerabilities from 2 modules and the Go standard library.
+This scan also found 4 vulnerabilities in packages you import and 7
+vulnerabilities in modules you require, but your code doesn't appear to call
+these vulnerabilities.
