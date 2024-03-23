@@ -14,7 +14,7 @@ resource "aws_iam_role" "custom_role" {
 
 resource "aws_iam_policy" "ec2_policy" {
   name   = "EC2CustomPolicy"
-  description = "Custom policy for EC2"
+  description = "Custom policy for MongoDB Instance"
   
   policy = jsonencode({
     Version = "2012-10-17"
@@ -26,8 +26,11 @@ resource "aws_iam_policy" "ec2_policy" {
       },
       {
         Effect   = "Allow"
-        Action   = "s3:*"
-        Resource = "*"
+        Action   = "s3:PutObject"
+        "Resource": [
+          "arn:aws:s3:::${aws_s3_bucket.mongodb.bucket}/"
+          "arn:aws:s3:::${aws_s3_bucket.mongodb.bucket}/*"
+        ]
       }
     ]
   })
