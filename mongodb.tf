@@ -18,11 +18,18 @@ resource "aws_iam_policy" "ec2_policy" {
   
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = "ec2:*"
-      Resource = "*"
-    }]
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "ec2:*"
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "s3:*"
+        Resource = "*"
+      }
+    ]
   })
 }
 
@@ -31,24 +38,10 @@ resource "aws_iam_role_policy_attachment" "ec2_policy_attachment" {
   policy_arn = aws_iam_policy.ec2_policy.arn
 }
 
-resource "aws_iam_policy" "s3_policy" {
-  name   = "S3CustomPolicy"
-  description = "Custom policy for S3"
-  
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = "s3:*"
-      Resource = ["arn:aws:s3:::${aws_s3_bucket.mongodb_backup_bucket.bucket}/*","arn:aws:s3:::${aws_s3_bucket.mongodb_backup_bucket.bucket}/"]
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "s3_policy_attachment" {
-  role       = aws_iam_role.custom_role.name
-  policy_arn = aws_iam_policy.s3_policy.arn
-}
+#resource "aws_iam_role_policy_attachment" "s3_policy_attachment" {
+#  role       = aws_iam_role.custom_role.name
+#  policy_arn = aws_iam_policy.s3_policy.arn
+#}
 
 resource "aws_iam_instance_profile" "mongodb" {
   name       = "Mongodb"
@@ -80,20 +73,41 @@ resource "aws_security_group" "mongo_sg" {
   }
 }
 
-resource "aws_s3_bucket" "mongodb_backup_bucket" {
+resource "aws_s3_bucket" "mongodb" {
   bucket = "mongodb-backup-${random_pet.bucket_suffix.id}"
   force_destroy = true
 }
 
-resource "aws_s3_bucket_ownership_controls" "mongodb_backup_bucket" {
-  bucket = aws_s3_bucket.mongodb_backup_bucket.id
+resource "aws_s3_bucket_policy" "mongodb" {
+  bucket = aws_s3_bucket.mongodb.id
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicRead",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": ["s3:GetObject","s3:ListBucket"],
+      "Resource": [
+        "arn:aws:s3:::${aws_s3_bucket.mongodb.bucket}",
+        "arn:aws:s3:::${aws_s3_bucket.mongodb.bucket}/*"
+      ]
+    }
+  ]
+}
+POLICY
+}
+
+resource "aws_s3_bucket_ownership_controls" "mongodb" {
+  bucket = aws_s3_bucket.mongodb.id
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "mongodb_backup_bucket" {
-  bucket = aws_s3_bucket.mongodb_backup_bucket.id
+resource "aws_s3_bucket_public_access_block" "mongodb" {
+  bucket = aws_s3_bucket.mongodb.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -101,13 +115,13 @@ resource "aws_s3_bucket_public_access_block" "mongodb_backup_bucket" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_acl" "mongodb_backup_bucket" {
+resource "aws_s3_bucket_acl" "mongodb" {
   depends_on = [
-    aws_s3_bucket_ownership_controls.mongodb_backup_bucket,
-    aws_s3_bucket_public_access_block.mongodb_backup_bucket,
+    aws_s3_bucket_ownership_controls.mongodb,
+    aws_s3_bucket_public_access_block.mongodb,
   ]
 
-  bucket = aws_s3_bucket.mongodb_backup_bucket.id
+  bucket = aws_s3_bucket.mongodb.id
   acl    = "public-read"
 }
 
@@ -158,6 +172,6 @@ resource "aws_instance" "mongo" {
               sudo sed -i 's/bindIp: 127.0.0.1/bindIpAll: true/' /etc/mongod.conf
               sudo systemctl restart mongod.service
 
-              sudo tee -a /etc/crontab <<< "*/15 * * * * root mongodump --uri mongodb://admin:${random_pet.mongodbpw.id}@10.0.4.100:27017 --out /tmp/mongodb_backup && aws s3 cp /tmp/mongodb_backup s3://${aws_s3_bucket.mongodb_backup_bucket.bucket}/ --recursive"
+              sudo tee -a /etc/crontab <<< "*/15 * * * * root mongodump --uri mongodb://admin:${random_pet.mongodbpw.id}@10.0.4.100:27017 --out /tmp/mongodb_backup && aws s3 cp /tmp/mongodb_backup s3://${aws_s3_bucket.mongodb.bucket}/ --recursive"
               EOF
 }
