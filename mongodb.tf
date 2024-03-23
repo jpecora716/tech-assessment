@@ -28,7 +28,7 @@ resource "aws_iam_policy" "ec2_policy" {
         Effect   = "Allow"
         Action   = "s3:PutObject"
         "Resource": [
-          "arn:aws:s3:::${aws_s3_bucket.mongodb.bucket}/"
+          "arn:aws:s3:::${aws_s3_bucket.mongodb.bucket}/",
           "arn:aws:s3:::${aws_s3_bucket.mongodb.bucket}/*"
         ]
       }
@@ -40,11 +40,6 @@ resource "aws_iam_role_policy_attachment" "ec2_policy_attachment" {
   role       = aws_iam_role.custom_role.name
   policy_arn = aws_iam_policy.ec2_policy.arn
 }
-
-#resource "aws_iam_role_policy_attachment" "s3_policy_attachment" {
-#  role       = aws_iam_role.custom_role.name
-#  policy_arn = aws_iam_policy.s3_policy.arn
-#}
 
 resource "aws_iam_instance_profile" "mongodb" {
   name       = "Mongodb"
@@ -65,7 +60,7 @@ resource "aws_security_group" "mongo_sg" {
     from_port   = 27017
     to_port     = 27017
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"] # Allow traffic only from within the VPC
+    cidr_blocks = ["10.0.0.0/16"] # Only allow db traffic from within the VPC
   }
 
   ingress {
@@ -76,12 +71,17 @@ resource "aws_security_group" "mongo_sg" {
   }
 }
 
+resource "random_pet" "bucket_suffix" {
+  length  = 3
+}
+
 resource "aws_s3_bucket" "mongodb" {
   bucket = "mongodb-backup-${random_pet.bucket_suffix.id}"
   force_destroy = true
 }
 
 resource "aws_s3_bucket_policy" "mongodb" {
+  depends_on = [aws_s3_bucket_acl.mongodb]
   bucket = aws_s3_bucket.mongodb.id
   policy = <<POLICY
 {
@@ -128,10 +128,6 @@ resource "aws_s3_bucket_acl" "mongodb" {
   acl    = "public-read"
 }
 
-resource "random_pet" "bucket_suffix" {
-  length  = 3
-}
-
 resource "random_pet" "mongodbpw" {
   length  = 3
 }
@@ -145,7 +141,7 @@ module "key_pair" {
 }
 
 resource "aws_instance" "mongo" {
-  ami           = "ami-02d7fd1c2af6eead0" # Change to your desired AMI
+  ami           = "ami-02d7fd1c2af6eead0"
   instance_type = "t3.micro"
   subnet_id     = module.vpc.public_subnets[0]
   private_ip    = "10.0.4.100"

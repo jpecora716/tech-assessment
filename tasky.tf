@@ -1,3 +1,41 @@
+resource "kubectl_manifest" "tasky_ns" {
+  yaml_body = <<YAML
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tasky
+YAML
+}
+
+resource "kubectl_manifest" "tasky_sa" {
+  depends_on = [kubectl_manifest.tasky_ns]
+  yaml_body = <<YAML
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tasky
+  namespace: tasky
+YAML
+}
+
+resource "kubectl_manifest" "tasky_rb" {
+  yaml_body = <<YAML
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: null
+  name: tasky-cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: tasky
+  namespace: tasky
+YAML
+}
+
 resource "kubernetes_deployment" "tasky" {
   depends_on = [kubectl_manifest.tasky_sa,random_pet.mongodbpw]
   metadata {
@@ -59,43 +97,3 @@ spec:
 YAML
 }
 
-resource "kubectl_manifest" "tasky_ns" {
-  #depends_on = [helm_release.eks_alb]
-  yaml_body = <<YAML
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: tasky
-YAML
-}
-
-resource "kubectl_manifest" "tasky_sa" {
-  #depends_on = [helm_release.eks_alb,kubectl_manifest.tasky_ns]
-  depends_on = [kubectl_manifest.tasky_ns]
-  yaml_body = <<YAML
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: tasky
-  namespace: tasky
-YAML
-}
-
-resource "kubectl_manifest" "tasky_rb" {
-  #depends_on = [helm_release.eks_alb]
-  yaml_body = <<YAML
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  creationTimestamp: null
-  name: tasky-cluster-admin
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: tasky
-  namespace: tasky
-YAML
-}

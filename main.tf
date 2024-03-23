@@ -12,18 +12,6 @@ provider "kubernetes" {
   }
 }
 
-provider "helm" {
-  kubernetes {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-      command     = "aws"
-    }
-  }
-}
-
 provider "kubectl" {
   host                   = module.eks.cluster_endpoint
   load_config_file       = false
@@ -34,7 +22,6 @@ provider "kubectl" {
     command     = "aws"
   }
 }
-
 
 # Filter out local zones, which are not currently supported 
 # with managed node groups
@@ -91,8 +78,6 @@ module "eks" {
   vpc_id                         = module.vpc.vpc_id
   subnet_ids                     = module.vpc.private_subnets
   cluster_endpoint_public_access = true
-
-  #enable_irsa = true
 
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
