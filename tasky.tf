@@ -59,6 +59,7 @@ resource "kubernetes_deployment" "tasky" {
         }
       }
       spec {
+        service_account_name = "tasky"
         container {
           image = "lderjim/jpecora-tasky:latest"
           name  = "tasky"
