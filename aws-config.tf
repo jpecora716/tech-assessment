@@ -1,6 +1,6 @@
+# https://registry.terraform.io/modules/cloudposse/config/aws/latest
 module "awsconfig" {
   source = "cloudposse/config/aws"
-  # Cloud Posse recommends pinning every module to a specific version
   version     = "1.5.2"
 
   create_sns_topic = false
@@ -11,11 +11,12 @@ module "awsconfig" {
   force_destroy = true
 }
 
-module "nist_conformance_pack" {
+# https://registry.terraform.io/modules/cloudposse/config/aws/latest/submodules/conformance-pack
+module "devops_conformance_pack" {
   source = "cloudposse/config/aws//modules/conformance-pack"
   version     = "1.5.2"
-  name = "NIST 800-53 rev-4"
-  conformance_pack="https://raw.githubusercontent.com/awslabs/aws-config-rules/master/aws-config-conformance-packs/Operational-Best-Practices-for-NIST-800-53-rev-4.yaml"
+  name = "DevOps Best Practices"
+  conformance_pack="https://raw.githubusercontent.com/awslabs/aws-config-rules/master/aws-config-conformance-packs/Operational-Best-Practices-for-DevOps.yaml"
   depends_on = [module.awsconfig]
 }
 
